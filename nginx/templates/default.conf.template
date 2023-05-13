@@ -28,7 +28,16 @@ server {
     }
 
     location /rust/ {
+        if ($request_method !~ ^(POST)$ ) {  # TODO
+               return 444;
+        }
+        client_max_body_size 50;  # TODO
         proxy_pass http://rust:8000/;
         proxy_http_version 1.1;
     }
+
+    location / {
+        return 444;
+    }
+
 }
