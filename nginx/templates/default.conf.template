@@ -22,8 +22,13 @@ server {
     #ssl_certificate /cert/${NGINX_HOST}.cer;
     #ssl_certificate_key /cert/${NGINX_HOST}.key;
 
-    location /python {
-        proxy_pass  http://python-wsgi:8000/;
+    location /python-wsgi/ {
+        proxy_pass http://python-wsgi:8000/;
+        proxy_http_version 1.1;
+    }
+
+    location /rust/ {
+        proxy_pass http://rust:8000/;
         proxy_http_version 1.1;
     }
 }

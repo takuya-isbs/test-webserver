@@ -12,3 +12,7 @@ services:
   python-wsgi:
     build:
       context: ./python-wsgi
+
+  rust:
+    build:
+      context: ./rust
