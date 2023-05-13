@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      #- ./cert:/cert:ro
+    ports:
+      - "80:80"
+
+  python-wsgi:
+    build:
+      context: ./python-wsgi
