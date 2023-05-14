@@ -10,9 +10,11 @@ services:
       - "80:80"
 
   python-wsgi:
+    hostname: python-wsgi
     build:
       context: ./python-wsgi
 
   rust:
+    hostname: rust
     build:
       context: ./rust
