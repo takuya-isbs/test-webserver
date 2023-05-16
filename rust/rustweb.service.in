@@ -1,0 +1,20 @@
+[Unit]
+Description=Test Web Server by Rust
+After=network.target
+
+[Service]
+Type=simple
+
+@DISABLE_USERNAME@User=@USERNAME@
+@DISABLE_GROUPNAME@Group=@GROUPNAME@
+
+EnvironmentFile=@ENVFILE@
+#Environment=RUST_LOG=debug
+ExecStart=@BINDIR@/rustweb
+
+OOMScoreAdjust=-1000
+TimeoutSec=300
+PrivateTmp = true
+
+[Install]
+WantedBy=multi-user.target
