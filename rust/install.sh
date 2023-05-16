@@ -24,4 +24,5 @@ systemctl enable $SYSTEMD_OPT_USER --now ${NAME}.service
 
 systemctl $SYSTEMD_OPT_USER status ${NAME}.service | cat
 
+sleep 2
 curl -s http://localhost:8000/info/1 | jq .
