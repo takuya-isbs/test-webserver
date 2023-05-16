@@ -1,5 +1,37 @@
+use std::path::PathBuf;
+use clap::Parser;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, middleware};
 use serde::{Deserialize, Serialize};
+
+/// from https://docs.rs/clap/latest/clap/_derive/_tutorial/index.html
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Sets a custom config file
+    #[arg(short, long, value_name = "FILE")]
+    config: Option<PathBuf>,
+
+    /// Listen address
+    #[arg(short, long, value_name = "ADDR",
+	  default_value = "0.0.0.0"
+    )]
+    listen: String,
+
+    /// Port number
+    #[arg(short, long, value_name = "PORT",
+	  default_value_t = 80,
+	  value_parser = clap::value_parser!(u16).range(1..)
+    )]
+    port: u16,
+
+    /// Turn debugging information on
+    #[arg(short, long, action = clap::ArgAction::Count)]
+    debug: u8,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Info {
@@ -38,12 +70,44 @@ async fn post_info(info: web::Json<Info>) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
+
+    let cli = Cli::parse();
+
+    let listen_addr = cli.listen;
+    let port = cli.port;
+    let bind_addr = listen_addr + ":" + &port.to_string();
+    println!("bind_addr: {bind_addr}");
+
+    let config_file = cli.config.as_deref();
+    if let Some(config_file) = config_file {
+	println!("config file: {}", config_file.display());
+
+	let file = File::open(config_file)?;
+	let reader = BufReader::new(file);
+	for line in reader.lines() {
+	    let line = line?;
+	    let columns: Vec<&str> = line.split(' ').collect();
+	    if let Some(second_column) = columns.get(1) {
+		println!("{}", second_column);
+	    }
+	}
+    } else {
+	println!("no config file")
+    }
+
+    match cli.debug {
+	0 => println!("no -d"),
+	1 => println!("use -d"),
+	2 => println!("use -dd"),
+	_ => println!("use -ddd"),
+    }
+
     HttpServer::new(
 	|| App::new()
 	    .wrap(middleware::Logger::default())
 	    .service(get_info).service(post_info)
     )
-	.bind("0.0.0.0:8000")?
+	.bind(bind_addr)?
 	.run()
 	.await
 }
@@ -80,5 +144,11 @@ mod tests {
 	let resp: Info = test::call_and_read_body_json(&app, req).await;
 	assert_eq!(resp.id, 12345);
 	assert_eq!(resp.age, Some(67890));
+    }
+
+    #[test]
+    async fn verify_cli() {
+	use clap::CommandFactory;
+	Cli::command().debug_assert()
     }
 }
