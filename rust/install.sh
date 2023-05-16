@@ -6,7 +6,12 @@ set -eux
 
 NAME=rustweb
 
-cargo install --path .
+if [ $uid -eq 0 ]; then
+    cargo install --root /usr/local --path .
+else
+    cargo install --path .
+fi
+
 BINPATH=`which rustweb`
 BINDIR=`dirname $BINPATH`
 
