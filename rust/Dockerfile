@@ -20,4 +20,5 @@ RUN apt-get update
 #COPY --from=builder /usr/local/cargo/bin/rustweb /usr/local/bin/rustweb
 
 ENV RUST_LOG=debug
+ENV TZ=Asia/Tokyo
 CMD ["rustweb"]

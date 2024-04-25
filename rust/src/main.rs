@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use clap::Parser;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use chrono::prelude::{Local};
 
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, middleware};
 use serde::{Deserialize, Serialize};
@@ -33,12 +34,20 @@ struct Cli {
     debug: u8,
 }
 
+fn default_now() -> String {
+    let now = Local::now();
+    let now_default = now.to_string();
+    now_default
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct Info {
     id: u32,
     age: Option<u32>,
     value: String,
     flag: bool,
+    #[serde(default = "default_now")]
+    now: String,
 }
 
 // for acix_web 3.3.2
@@ -50,15 +59,20 @@ async fn get_info(path: web::Path<u32>) -> impl Responder {
     let id = path.into_inner();
     let age: Option<u32> = Some(id);
     let flag: bool = false;
+    let now = Local::now();
+    //let now_default = now.to_string();
+    let now_formatted = now.format("%Y-%m-%d %H:%M:%S").to_string();
+
     HttpResponse::Ok().json(Info {
 	id,
 	age,
 	value: String::from("あいうえおテスト"),
 	flag,
+	now: now_formatted,
     })
 }
 
-// curl -X POST -H "Content-Type: application/json" -d '{"id", 100, "value": "hoge", "flag": true}' http://127.0.0.1:8080/info
+// curl -X POST -H "Content-Type: application/json" -d '{"id": 100, "value": "hoge", "flag": true}' http://127.0.0.1:80/info
 #[post("/info")]
 async fn post_info(info: web::Json<Info>) -> impl Responder {
     println!("post_info");
