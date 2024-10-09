@@ -43,7 +43,9 @@ test-all:
 	done
 
 example-python-wsgi:
-	curl -L "http://localhost/python-wsgi/testpath?a=1&a=2&b=3"
+	curl -s -L "http://localhost/python-wsgi/testpath?a=1&a=2&b=3"
+	curl -s -L --basic --user "user1:pass1" "http://localhost/python-wsgi/testpath?a=1&a=2&b=3"
+	curl -s -L --oauth2-bearer "ACCESSTOKEN" "http://localhost/python-wsgi/testpath?a=1&a=2&b=3"
 
 example-rust:
-	curl -L "http://localhost/rust/info/123"
+	curl -s -L "http://localhost/rust/info/123" | jq .
