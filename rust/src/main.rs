@@ -36,8 +36,7 @@ struct Cli {
 
 fn default_now() -> String {
     let now = Local::now();
-    let now_default = now.to_string();
-    now_default
+    now.to_string()
 }
 
 #[derive(Debug, Serialize, Deserialize)]

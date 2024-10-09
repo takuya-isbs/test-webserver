@@ -1,4 +1,5 @@
-FROM python:3.11-bullseye
+#FROM python:3.11-bullseye
+FROM python:3.13-bookworm
 
 RUN python3 -m pip install gunicorn \
     && mkdir /SRC

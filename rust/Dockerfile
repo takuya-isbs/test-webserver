@@ -1,4 +1,4 @@
-FROM rust:bullseye as builder
+FROM rust:bullseye AS builder
 
 RUN cd / && cargo new --bin app && ln -s /app /SRC
 WORKDIR /app

@@ -41,3 +41,9 @@ test-all:
 	for name in $(TYPES); do \
 		$(MAKE) test-$${name}; \
 	done
+
+example-python-wsgi:
+	curl -L "http://localhost/python-wsgi/testpath?a=1&a=2&b=3"
+
+example-rust:
+	curl -L "http://localhost/rust/info/123"
